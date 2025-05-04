@@ -41,7 +41,7 @@ namespace UserRoles.Controllers
 
                 if (await userManager.IsInRoleAsync(user, "Admin"))
                 {
-                    return RedirectToAction("Admin", "Home"); // Redirige al Admin
+                    return RedirectToAction("Admin", "Admin"); // Redirige al Admin
                 }
                 else if (await userManager.IsInRoleAsync(user, "User"))
                 {

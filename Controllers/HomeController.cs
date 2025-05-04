@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Nodo.ViewModels;
 using UserRoles.Models;
 
 namespace Nodo.Controllers
@@ -25,12 +26,6 @@ namespace Nodo.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
-        public IActionResult Admin()
-        {
-            return View();
-        }
-
         [Authorize(Roles = "User")]
         public IActionResult User()
         {
@@ -40,7 +35,10 @@ namespace Nodo.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel 
+            { 
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
+            });
         }
     }
 }

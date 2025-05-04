@@ -1,0 +1,49 @@
+﻿@using Nodo.ViewModels
+@model IEnumerable<ProyectoNodoViewModel>
+
+@{
+    ViewData["Title"] = "Administrador de Proyectos - Nodo";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-50" placeholder="Buscar proyecto..." id="busquedaProyecto">
+        <a asp-action="Create" class="btn btn-primary ms-3">+ Agregar Proyecto</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Alumnos</th>
+                <th>Asesor</th>
+                <th>Estado</th>
+                <th>Fechas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var proyecto in Model)
+            {
+                <tr>
+                    <td>@proyecto.Nombre</td>
+                    <td>@string.Join(", ", proyecto.Alumnos)</td>
+                    <td>@proyecto.Asesor</td>
+                    <td>
+                        <span class="badge @(proyecto.Estado == "Finalizado" ? "bg-secondary" : "bg-success")">
+                            @proyecto.Estado
+                        </span>
+                    </td>
+                    <td>@proyecto.FechaInicio.ToString("dd/MM/yyyy") - @proyecto.FechaFin.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@proyecto.Id" class="btn btn-sm btn-info">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@proyecto.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@proyecto.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

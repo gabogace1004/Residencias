@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link rel="stylesheet" href="~/css/slideshow.css" />
+
+<div class="slideshow-container">
+
+    <div class="mySlides fade">
+        <div class="numbertext">1 / 3</div>
+        <img src="~/images/account-bg.jpg" style="width:100%">
+        <div class="text">Montaña</div>
+    </div>
+
+    <div class="mySlides fade">
+        <div class="numbertext">2 / 3</div>
+        <img src="@Url.Content("~/images/account-bg.jpg")" style="width:100%">
+        <div class="text">Playa</div>
+    </div>
+
+    <div class="mySlides fade">
+        <div class="numbertext">3 / 3</div>
+        <img src="~/images/account-bg.jpg" style="width:100%">
+        <div class="text">Ciudad</div>
+    </div>
+
+</div>
+
+<br>
+
+<div style="text-align:center">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+</div>
+<script src="~/js/slideshow.js"></script>

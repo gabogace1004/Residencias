@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Gestión de proyectos NODO</title>
+
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/UserRoles.styles.css" asp-append-version="true" />
+
+    <style>
+        .navbar {
+            background-color: #f1f1f1 !important;
+            padding: 20px 10px;
+        }
+
+        .navbar-brand {
+            font-size: 25px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar-nav .nav-link {
+            color: black;
+            font-size: 18px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+            .navbar-nav .nav-link:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            .navbar-nav .nav-link.active {
+                background-color: dodgerblue;
+                color: white !important;
+            }
+
+    
+
+        {
+            flex-direction: column;
+        }
+
+        }</style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Gestión de proyectos NODO</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <!-- Home y Privacy (Izquierda) -->
+                        <ul class="navbar-nav nav-left">
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="ManageUsers">Gestionar Usuarios</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="SystemReports">Reportes de Sistema</a>
+                                </li>
+                            }
+                        </ul>
+
+                        <!-- Login y Register (Derecha) -->
+                        <ul class="navbar-nav nav-right">
+                            <li class="nav-item">
+                                <partial name="_LoginPartial" />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-3">
+        <div class="container">
+            &copy; 2025 - Gestión de proyectos NODO - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

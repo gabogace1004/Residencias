@@ -50,6 +50,30 @@ namespace Nodo.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Admin() => View();
 
+        private static List<AsesorViewModel> asesores = new();
+
+        [HttpGet]
+        public IActionResult Asesores()
+        {
+            return View(asesores);
+        }
+
+        [HttpGet]
+        public IActionResult CreateAsesor()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateAsesor(AsesorViewModel asesor)
+        {
+            asesor.Id = asesores.Count + 1;
+            asesores.Add(asesor);
+            return RedirectToAction("Asesores");
+        }
+
     }
-}
+
+
+    }
     

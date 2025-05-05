@@ -1,0 +1,40 @@
+﻿@using Nodo.ViewModels
+
+@model AsesorViewModel
+@{
+    ViewData["Title"] = "Agregar Asesor";
+}
+
+<div class="container mt-5">
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="CreateAsesor" method="post">
+        <div class="mb-3">
+            <label>Nombre</label>
+            <input asp-for="Nombre" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Apellido Paterno</label>
+            <input asp-for="ApellidoPaterno" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Apellido Materno</label>
+            <input asp-for="ApellidoMaterno" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Departamento</label>
+            <input asp-for="Departamento" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Número de Contacto</label>
+            <input asp-for="NumeroContacto" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>Correo Electrónico</label>
+            <input asp-for="Correo" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a asp-action="Asesores" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>

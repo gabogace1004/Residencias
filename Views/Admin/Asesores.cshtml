@@ -1,0 +1,32 @@
+﻿@using Nodo.ViewModels
+@model IEnumerable<AsesorViewModel>
+@{
+    ViewData["Title"] = "Lista de Asesores";
+}
+
+<div class="container mt-5">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="CreateAsesor" class="btn btn-primary mb-3">+ Agregar Asesor</a>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre completo</th>
+                <th>Departamento</th>
+                <th>Contacto</th>
+                <th>Correo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td>@a.Nombre @a.ApellidoPaterno @a.ApellidoMaterno</td>
+                    <td>@a.Departamento</td>
+                    <td>@a.NumeroContacto</td>
+                    <td>@a.Correo</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

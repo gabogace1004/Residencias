@@ -1,0 +1,65 @@
+﻿
+
+@model IEnumerable<UserRoles.Models.Alumno>
+
+@{
+    ViewData["Title"] = "Administrar Alumnos";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <div class="row mb-3">
+        <div class="col-md-8 d-flex align-items-center gap-2">
+            <input type="text" class="form-control" placeholder="Buscar alumno..." id="buscarAlumno">
+            <a asp-action="ExportAlumnosExcel" class="btn btn-success">
+                📤 Exportar a Excel
+            </a>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="CreateAlumno" class="btn btn-primary">
+                + Agregar Alumno
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Matrícula</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Contacto</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaAlumnos">
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td>@a.Matricula</td>
+                    <td>@a.Nombre @a.ApellidoPaterno @a.ApellidoMaterno</td>
+                    <td>@a.Departamento</td>
+                    <td>@a.NumeroContacto</td>
+                    <td>@a.Correo</td>
+                    <td>
+                        <a asp-action="EditAlumno" asp-route-id="@a.Matricula" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="DeleteAlumno" asp-route-id="@a.Matricula" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("buscarAlumno").addEventListener("input", function () {
+            let filtro = this.value.toLowerCase();
+            document.querySelectorAll("#tablaAlumnos tr").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(filtro) ? "" : "none";
+            });
+        });
+    </script>
+}

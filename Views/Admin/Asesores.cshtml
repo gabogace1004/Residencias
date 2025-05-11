@@ -1,32 +1,74 @@
 ﻿@using Nodo.ViewModels
-@model IEnumerable<AsesorViewModel>
+@model IEnumerable<UserRoles.Models.Asesor>
+
 @{
-    ViewData["Title"] = "Lista de Asesores";
+    ViewData["Title"] = "Administrar Asesores - Nodo";
 }
 
 <div class="container mt-5">
-    <h2>@ViewData["Title"]</h2>
-    <a asp-action="CreateAsesor" class="btn btn-primary mb-3">+ Agregar Asesor</a>
+    <h2 class="mb-4">@ViewData["Title"]</h2>
 
-    <table class="table table-bordered">
+   
+
+        <div class="row mb-3">
+            <div class="col-md-8 d-flex align-items-center gap-2">
+                <input type="text" class="form-control" placeholder="Buscar asesor..." id="buscarAsesor">
+                <a asp-action="ExportAsesoresExcel" class="btn btn-success">
+                    📤 Exportar a Excel
+                </a>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="CreateAsesor" class="btn btn-primary">
+                    + Agregar Asesor
+                </a>
+            </div>
+        </div>
+
+    <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
-                <th>Nombre completo</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
                 <th>Departamento</th>
                 <th>Contacto</th>
                 <th>Correo</th>
+                <th>Acciones</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (var a in Model)
+        <tbody id="tablaAsesores">
+            @foreach (var asesor in Model)
             {
                 <tr>
-                    <td>@a.Nombre @a.ApellidoPaterno @a.ApellidoMaterno</td>
-                    <td>@a.Departamento</td>
-                    <td>@a.NumeroContacto</td>
-                    <td>@a.Correo</td>
+                    <td>@asesor.Nombre</td>
+                    <td>@asesor.ApellidoPaterno</td>
+                    <td>@asesor.ApellidoMaterno</td>
+                    <td>@asesor.Departamento</td>
+                    <td>@asesor.NumeroContacto</td>
+                    <td>@asesor.Correo</td>
+                    <td>
+                        <a asp-action="EditAsesor" asp-route-id="@asesor.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="DeleteAsesor" asp-route-id="@asesor.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        const buscador = document.getElementById('buscarAsesor');
+        if (buscador) {
+            buscador.addEventListener('keyup', function () {
+                const filtro = this.value.toLowerCase();
+                const filas = document.querySelectorAll("#tablaAsesores tr");
+
+                filas.forEach(fila => {
+                    const texto = fila.innerText.toLowerCase();
+                    fila.style.display = texto.includes(filtro) ? "" : "none";
+                });
+            });
+        }
+    </script>
+}

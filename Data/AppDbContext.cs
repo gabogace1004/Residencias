@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 using UserRoles.Models;
 
 namespace UserRoles.Data
@@ -9,5 +10,7 @@ namespace UserRoles.Data
         public AppDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Asesor> Asesores { get; set; } // ← ESTA LÍNEA AGREGA LA TABLA
+        public DbSet<Alumno> Alumnos { get; set; }// ← ESTA LÍNEA AGREGA LA TABLA
+
     }
 }

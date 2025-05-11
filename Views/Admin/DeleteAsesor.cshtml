@@ -1,0 +1,23 @@
+﻿@model UserRoles.Models.Asesor
+
+@{
+    ViewData["Title"] = "Eliminar Asesor";
+}
+
+<div class="container mt-5">
+    <h2 class="text-danger mb-4">@ViewData["Title"]</h2>
+    <p>¿Estás seguro de que deseas eliminar este asesor?</p>
+
+    <div class="border rounded p-3 mb-4 bg-light">
+        <p><strong>Nombre completo:</strong> @Model.Nombre @Model.ApellidoPaterno @Model.ApellidoMaterno</p>
+        <p><strong>Departamento:</strong> @Model.Departamento</p>
+        <p><strong>Contacto:</strong> @Model.NumeroContacto</p>
+        <p><strong>Correo:</strong> @Model.Correo</p>
+    </div>
+
+    <form asp-action="DeleteAsesor" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a asp-action="Asesores" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>

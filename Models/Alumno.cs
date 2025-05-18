@@ -27,6 +27,6 @@ namespace UserRoles.Models
         [Required]
         [EmailAddress]
         public string Correo { get; set; }
-
+        public List<AlumnoProyecto> AlumnosProyectos { get; set; }
     }
 }

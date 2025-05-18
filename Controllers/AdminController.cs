@@ -170,6 +170,10 @@ namespace Nodo.Controllers
         }
 
 
+        // --------------------------
+        // CRUD aLUMNOS
+        // -----
+
         public IActionResult Alumnos()
         {
             var alumnos = _context.Alumnos.ToList();
@@ -260,6 +264,145 @@ namespace Nodo.Controllers
 
             var bytes = Encoding.UTF8.GetBytes(csv.ToString());
             return File(bytes, "text/csv", $"alumnos_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
+        }
+
+        // --------------------------
+        // CRUD PROYECTOS
+        // --------------------------
+
+        [HttpGet]
+        public IActionResult Proyectos()
+        {
+            var proyectos = _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos)
+                    .ThenInclude(ap => ap.Alumno)
+                .ToList();
+
+            return View("Proyectos", proyectos);
+        }
+
+        [HttpGet]
+        public IActionResult CreateProyecto()
+        {
+            // Carga los datos necesarios para dropdowns y buscador
+            ViewBag.Asesores = _context.Asesores.ToList();
+            ViewBag.Alumnos = _context.Alumnos.ToList();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProyecto(
+     [Bind("Nombre,Descripcion,RazonSocial,Estado,FechaInicio,FechaFin,AsesorId")] Proyecto proyecto,
+     string AlumnosMatriculas,
+     List<IFormFile> ArchivosAdjuntos)
+        {
+            if (proyecto.Estado != "No iniciado")
+            {
+                if (!proyecto.FechaInicio.HasValue)
+                    ModelState.AddModelError("FechaInicio", "La fecha de inicio es obligatoria.");
+
+                if (!proyecto.FechaFin.HasValue)
+                    ModelState.AddModelError("FechaFin", "La fecha de fin es obligatoria.");
+
+                if (!proyecto.AsesorId.HasValue)
+                    ModelState.AddModelError("AsesorId", "Debe seleccionar un asesor.");
+
+                if (string.IsNullOrWhiteSpace(AlumnosMatriculas))
+                    ModelState.AddModelError("AlumnosMatriculas", "Debe agregar al menos un alumno.");
+            }
+            else
+            {
+                // Este sí garantiza que no bloquee aunque no exista el campo
+                ModelState.Remove("AlumnosMatriculas");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var kv in ModelState)
+                    foreach (var err in kv.Value.Errors)
+                        Console.WriteLine($"Error en {kv.Key}: {err.ErrorMessage}");
+
+                ViewBag.Asesores = _context.Asesores.ToList();
+                ViewBag.Alumnos = _context.Alumnos.ToList();
+                return View(proyecto);
+            }
+
+            // Guardar proyecto para obtener su Id
+            _context.Proyectos.Add(proyecto);
+            await _context.SaveChangesAsync();
+
+            // Asociar alumnos seleccionados
+            var matriculas = AlumnosMatriculas?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(m => m.Trim())
+                ?? Array.Empty<string>();
+
+            foreach (var matricula in matriculas)
+            {
+                _context.AlumnosProyectos.Add(new AlumnoProyecto
+                {
+                    ProyectoId = proyecto.Id,
+                    AlumnoMatricula = matricula
+                });
+            }
+
+            // Crear carpeta física
+            var folder = Path.Combine("wwwroot", "proyectos", proyecto.Id.ToString());
+            Directory.CreateDirectory(folder);
+
+            // Guardar cada archivo adjunto
+            if (ArchivosAdjuntos != null && ArchivosAdjuntos.Any())
+            {
+                foreach (var archivo in ArchivosAdjuntos)
+                {
+                    var extension = Path.GetExtension(archivo.FileName).ToLower();
+                    var path = Path.Combine(folder, archivo.FileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await archivo.CopyToAsync(stream);
+
+                    _context.Archivos.Add(new Archivo
+                    {
+                        Nombre = archivo.FileName,
+                        Extension = extension,
+                        RutaArchivo = $"/proyectos/{proyecto.Id}/{archivo.FileName}",
+                        ProyectoId = proyecto.Id
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Proyectos");
+        }
+
+        [HttpGet]
+        public IActionResult DetailsProyecto(int id)
+        {
+            var proyecto = _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos)
+                    .ThenInclude(ap => ap.Alumno)
+                .Include(p => p.Archivos)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (proyecto == null)
+                return NotFound();
+
+            return View("DetailsProyecto", proyecto);
+        }
+
+        [HttpGet]
+        public IActionResult Archivos(int id)
+        {
+            var proyecto = _context.Proyectos
+                .Include(p => p.Archivos)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (proyecto == null)
+                return NotFound();
+
+            return View("Archivos", proyecto);
         }
 
     }

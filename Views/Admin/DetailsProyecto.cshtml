@@ -1,0 +1,99 @@
+﻿@model UserRoles.Models.Proyecto
+@{
+    ViewData["Title"] = "Detalles del Proyecto";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg rounded">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">📋 Detalles del Proyecto</h3>
+        </div>
+        <div class="card-body">
+            <h4 class="text-dark mb-4">@Model.Nombre</h4>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="border p-3 rounded">
+                        <strong>Descripción:</strong>
+                        <p class="mb-0">@Model.Descripcion</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border p-3 rounded">
+                        <strong>Razón Social:</strong>
+                        <p class="mb-0">@Model.RazonSocial</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="border p-3 rounded h-100">
+                        <strong>Estado:</strong><br />
+                        <span class="badge fs-6 @(Model.Estado == "Finalizado" ? "bg-secondary" : Model.Estado == "En curso" ? "bg-success" : "bg-warning text-dark")">
+                            @Model.Estado
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border p-3 rounded h-100">
+                        <strong>Fecha de Inicio:</strong><br />
+                        @(Model.FechaInicio.HasValue ? Model.FechaInicio.Value.ToShortDateString() : "Sin definir")
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="border p-3 rounded h-100">
+                        <strong>Fecha de Fin:</strong><br />
+                        @(Model.FechaFin.HasValue ? Model.FechaFin.Value.ToShortDateString() : "Sin definir")
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="border p-3 rounded">
+                        <strong>Asesor Responsable:</strong>
+                        <p class="mb-0">@Model.Asesor?.Nombre @Model.Asesor?.ApellidoPaterno @Model.Asesor?.ApellidoMaterno</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border p-3 rounded">
+                        <strong>Alumnos Participantes:</strong>
+                        <ul class="mb-0">
+                            @foreach (var ap in Model.AlumnosProyectos)
+                            {
+                                <li>@ap.Alumno.Matricula - @ap.Alumno.Nombre @ap.Alumno.ApellidoPaterno @ap.Alumno.ApellidoMaterno</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="border p-3 rounded">
+                    <strong>Archivos Adjuntos:</strong>
+                    @if (Model.Archivos != null && Model.Archivos.Any())
+                    {
+                        <ul class="list-group mt-2">
+                            @foreach (var archivo in Model.Archivos)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@archivo.Nombre</span>
+                                    <a href="@archivo.RutaArchivo" target="_blank" class="btn btn-sm btn-outline-primary">📥 Descargar</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Sin archivos adjuntos.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="text-end">
+                <a asp-action="Proyectos" class="btn btn-secondary">← Volver</a>
+            </div>
+        </div>
+    </div>
+</div>

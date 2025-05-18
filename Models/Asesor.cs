@@ -9,5 +9,7 @@
         public string Departamento { get; set; }
         public string NumeroContacto { get; set; }
         public string Correo { get; set; }
+
+        public List<Proyecto> Proyectos { get; set; }
     }
 }

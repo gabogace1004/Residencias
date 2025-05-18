@@ -1,0 +1,77 @@
+﻿@model IEnumerable<UserRoles.Models.Proyecto>
+
+@{
+    ViewData["Title"] = "Administrador de Proyectos - Nodo";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <div class="row mb-3">
+        <div class="col-md-8 d-flex align-items-center gap-2">
+            <input type="text" class="form-control" placeholder="Buscar proyecto..." id="buscarProyecto" />
+            <a asp-action="ExportarExcel" class="btn btn-success">📥 Exportar a Excel</a>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="CreateProyecto" class="btn btn-primary">+ Agregar Proyecto</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Asesor</th>
+                <th>Alumnos</th>
+                <th>Estado</th>
+                <th>Fechas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaProyectos">
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Nombre</td>
+                    <td>@p.Asesor?.Nombre @p.Asesor?.ApellidoPaterno</td>
+                    <td>
+                        @string.Join(", ", p.AlumnosProyectos.Select(a => a.Alumno.Matricula + " " + a.Alumno.Nombre + " " + a.Alumno.ApellidoMaterno))
+                    </td>
+                    <td>
+                        <span class="badge
+                            @(p.Estado == "Finalizado" ? "bg-secondary" :
+                              p.Estado == "En curso" ? "bg-success" :
+                              "bg-warning text-dark")">
+                            @p.Estado
+                        </span>
+                    </td>
+                    <td>
+                        @(p.FechaInicio.HasValue ? p.FechaInicio.Value.ToShortDateString() : "Sin fecha") -
+                        @(p.FechaFin.HasValue ? p.FechaFin.Value.ToShortDateString() : "Sin fecha")
+                    </td>
+                    <td>
+                        <a asp-action="DetailsProyecto" asp-route-id="@p.Id" class="btn btn-sm btn-info">Ver</a>
+                        <a asp-action="EditProyecto" asp-route-id="@p.Id" class="btn btn-sm btn-warning">Editar</a>
+                        <a asp-action="DeleteProyecto" asp-route-id="@p.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        const buscador = document.getElementById("buscarProyecto");
+        if (buscador) {
+            buscador.addEventListener("input", function () {
+                const filtro = this.value.toLowerCase();
+                const filas = document.querySelectorAll("#tablaProyectos tr");
+
+                filas.forEach(fila => {
+                    fila.style.display = fila.innerText.toLowerCase().includes(filtro) ? "" : "none";
+                });
+            });
+        }
+    </script>
+}

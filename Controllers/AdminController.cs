@@ -405,6 +405,81 @@ namespace Nodo.Controllers
             return View("Archivos", proyecto);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditProyecto(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var proyecto = await _context.Proyectos.FindAsync(id);
+            if (proyecto == null) return NotFound();
+
+            // Carga los datos necesarios para dropdowns y buscador
+            ViewBag.Asesores = await _context.Asesores.ToListAsync();
+            ViewBag.Alumnos = await _context.Alumnos.ToListAsync();
+
+            return View(proyecto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProyecto(int id, [Bind("Id,Nombre,Descripcion,RazonSocial")] Proyecto proyecto)
+        {
+            if (id != proyecto.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(proyecto);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Proyectos.Any(e => e.Id == id))
+                        return NotFound();
+                    else
+                        throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            // En caso de error, se vuelve a cargar la información para la vista
+            ViewBag.Asesores = await _context.Asesores.ToListAsync();
+            ViewBag.Alumnos = await _context.Alumnos.ToListAsync();
+
+            return View(proyecto);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteProyecto(int? id)
+        {
+            if (id == null) return BadRequest();
+
+            var proyecto = await _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos)
+                    .ThenInclude(ap => ap.Alumno)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (proyecto == null) return NotFound();
+
+            return View(proyecto);
+        }
+
+        [HttpPost, ActionName("DeleteProyecto")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProyectoConfirmed(int id)
+        {
+            var proyecto = await _context.Proyectos.FindAsync(id);
+            if (proyecto != null)
+            {
+                _context.Proyectos.Remove(proyecto);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Proyectos"); // Asegúrate que exista una vista Index
+        }
+
+
     }
 
 

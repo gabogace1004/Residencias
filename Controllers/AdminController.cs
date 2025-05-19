@@ -479,6 +479,72 @@ namespace Nodo.Controllers
             return RedirectToAction("Proyectos"); // Asegúrate que exista una vista Index
         }
 
+        //Crud Graficas//
+
+        [HttpGet]
+        public IActionResult ProyectosDashboard()
+        {
+        
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDatosDashboard(DateTime? fechaInicio, DateTime? fechaFin)
+        {
+            var proyectos = _context.Proyectos.AsQueryable();
+
+            if (fechaInicio.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio <= fechaFin.Value);
+
+            var datos = await proyectos
+                .GroupBy(p => p.Estado)
+                .Select(g => new { Estado = g.Key, Cantidad = g.Count() })
+                .ToListAsync();
+
+            var estados = new[] { "No iniciado", "En curso", "Finalizado" };
+            var result = new
+            {
+                labels = estados,
+                counts = estados.Select(e => datos.FirstOrDefault(d => d.Estado == e)?.Cantidad ?? 0)
+            };
+
+            return Json(result);
+        }
+
+        // Para el modal (HTML)
+        [HttpGet]
+        public async Task<IActionResult> GetProyectosPorEstado(string estado, DateTime? fechaInicio, DateTime? fechaFin)
+        {
+            var proyectos = _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos).ThenInclude(ap => ap.Alumno)
+                .Where(p => p.Estado == estado);
+
+            if (fechaInicio.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio <= fechaFin.Value);
+
+            var lista = await proyectos.ToListAsync();
+            return PartialView("ListaProyectosModal", lista);
+        }
+
+        [HttpGet]
+        public IActionResult DetalleProyectoModal(int id)
+        {
+            var proyecto = _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos).ThenInclude(ap => ap.Alumno)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (proyecto == null) return NotFound();
+
+            return PartialView("DetalleProyectoModal", proyecto);
+        }
 
     }
 

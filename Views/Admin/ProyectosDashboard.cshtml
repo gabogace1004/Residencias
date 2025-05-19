@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Dashboard de Proyectos";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <!-- Filtros -->
+    <form id="filtroFechas" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Fecha Inicio</label>
+            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Fecha Fin</label>
+            <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+        </div>
+        <div class="col-md-4 align-self-end">
+            <button type="button" class="btn btn-primary w-100" onclick="cargarGrafica()">Filtrar</button>
+        </div>
+    </form>
+
+    <!-- Gráfica tipo doughnut -->
+    <div class="d-flex justify-content-center">
+        <canvas id="graficaProyectos" style="width:100%; max-width:600px; height:400px;"></canvas>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="modalProyectos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Proyectos por estado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="contenidoModal">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalDetalleProyecto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="contenidoDetalleProyecto">
+                    <!-- Aquí se inyecta el contenido vía fetch -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function cargarGrafica() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+
+            fetch(`/Admin/GetDatosDashboard?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`)
+                .then(res => res.json())
+                .then(data => {
+                    const ctx = document.getElementById('graficaProyectos').getContext('2d');
+                    if (window.myChart) window.myChart.destroy();
+
+                    window.myChart = new Chart(ctx, {
+                        type: "doughnut",
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                backgroundColor: ["#b91d47", "#00aba9", "#2b5797"],
+                                data: data.counts
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            onClick: function (e, elements) {
+                                if (elements.length > 0) {
+                                    const index = elements[0]._index || elements[0].index;
+                                    const estado = data.labels[index];
+                                    mostrarModal(estado, fechaInicio, fechaFin);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: "Distribución de proyectos por estado"
+                            }
+                        }
+                    });
+                });
+        }
+
+        function mostrarModal(estado, fechaInicio, fechaFin) {
+            fetch(`/Admin/GetProyectosPorEstado?estado=${estado}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById("contenidoModal").innerHTML = html;
+                    new bootstrap.Modal(document.getElementById("modalProyectos")).show();
+                });
+        }
+
+             function mostrarDetalleProyecto(id) {
+            fetch(`/Admin/DetalleProyectoModal/${id}`)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById("contenidoDetalleProyecto").innerHTML = html;
+                    new bootstrap.Modal(document.getElementById("modalDetalleProyecto")).show();
+                });
+        }
+        // Cargar automáticamente
+        window.onload = cargarGrafica;
+
+
+    </script>
+}

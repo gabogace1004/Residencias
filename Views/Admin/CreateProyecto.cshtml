@@ -43,7 +43,7 @@
 
         <div class="row mb-3">
             <div class="col">
-                <label class="form-label">Fecha Inicio</label>
+                <label class="form-label" id="labelFechaInicio">Fecha Inicio</label>
                 <input asp-for="FechaInicio" type="date" class="form-control" required />
                 <span asp-validation-for="FechaInicio" class="text-danger"></span>
             </div>
@@ -82,12 +82,7 @@
         <!-- Carga de archivos -->
         <div class="mb-3">
             <label class="form-label">Agregar Archivos</label>
-            <input type="file"
-                   name="ArchivosAdjuntos"
-                   class="form-control"
-                   multiple
-                   accept=".pdf,.zip"
-                   onchange="listarArchivos(this)" />
+            <input type="file" name="ArchivosAdjuntos" class="form-control" multiple accept=".pdf,.zip" onchange="listarArchivos(this)" />
             <ul id="archivosPrevios" class="list-group mt-2"></ul>
         </div>
 
@@ -100,7 +95,6 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        // Datos de alumnos para el buscador
         const alumnos = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(alumnos));
         const buscador = document.getElementById("buscadorAlumno");
         const resultados = document.getElementById("listaResultados");
@@ -112,7 +106,6 @@
         buscador.addEventListener("input", function () {
             const filtro = this.value.toLowerCase();
             resultados.innerHTML = "";
-
             if (filtro.length < 2) return;
 
             const filtrados = alumnos.filter(a =>
@@ -165,26 +158,35 @@
             }
         }
 
-        // Ocultar campos según estado
         const estadoSelect = document.querySelector("select[name='Estado']");
         const fechasRow = document.querySelectorAll(".row.mb-3")[0];
+        const labelFechaInicio = document.getElementById("labelFechaInicio");
         const asesorField = document.querySelector("select[name='AsesorId']").closest(".mb-3");
         const alumnosFields = [
             document.getElementById("buscadorAlumno").closest(".mb-3"),
             document.getElementById("alumnosSeleccionados").closest(".mb-3")
         ];
 
-        function toggleCamposSegunEstado() {
+                function toggleCamposSegunEstado() {
             const estado = estadoSelect.value;
             const mostrar = (estado !== "No iniciado");
 
-            fechasRow.style.display = mostrar ? "" : "none";
-            fechasRow.querySelectorAll("input").forEach(i => i.required = mostrar);
+            // Mostrar/ocultar fecha fin
+            const fechaFinField = document.querySelector("input[name='FechaFin']").closest(".col");
+            fechaFinField.style.display = mostrar ? "" : "none";
+            fechaFinField.querySelector("input").required = mostrar;
 
+            // Mostrar/ocultar asesor
             asesorField.style.display = mostrar ? "" : "none";
             asesorField.querySelector("select").required = mostrar;
 
+            // Mostrar/ocultar alumnos
             alumnosFields.forEach(f => f.style.display = mostrar ? "" : "none");
+
+            // Etiqueta de fecha de inicio
+            labelFechaInicio.textContent = estado === "No iniciado"
+                ? "Fecha programada de inicio"
+                : "Fecha de Inicio";
         }
 
         estadoSelect.addEventListener("change", toggleCamposSegunEstado);

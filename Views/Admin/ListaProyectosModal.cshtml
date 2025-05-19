@@ -1,0 +1,17 @@
+﻿@model List<UserRoles.Models.Proyecto>
+
+<ul class="list-group">
+    @foreach (var p in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>@p.Nombre</strong> - @p.Descripcion<br />
+                <span class="text-muted">Asesor: @p.Asesor?.Nombre @p.Asesor?.ApellidoPaterno</span><br />
+                <span class="text-muted">Inicio: @p.FechaInicio?.ToShortDateString()</span>
+            </div>
+            <a href="#" class="btn btn-sm btn-info"
+               onclick="mostrarDetalleProyecto(@p.Id)">Ver</a>
+
+        </li>
+    }
+</ul>

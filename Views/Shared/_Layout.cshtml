@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Gestión de proyectos NODO</title>
-
+ 
+  
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/UserRoles.styles.css" asp-append-version="true" />
@@ -86,8 +87,8 @@
                                        asp-controller="Admin" asp-action="Proyectos">Proyectos</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link @(currentAction == "Prueba" ? "active" : "")"
-                                       asp-controller="Admin" asp-action="Prueba">Reportes de Sistema</a>
+                                    <a class="nav-link @(currentAction == "Dashboard" ? "active" : "")"
+                                       asp-controller="Admin" asp-action="ProyectosDashboard">Dashboard</a>
                                 </li>
                             }
                         </ul>
@@ -109,7 +110,7 @@
             @RenderBody()
         </main>
     </div>
-
+ 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

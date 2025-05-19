@@ -1,5 +1,16 @@
 ﻿@model UserRoles.Models.Asesor
-
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>Ocurrieron errores al guardar:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
 @{
     ViewData["Title"] = "Agregar Asesor";
 

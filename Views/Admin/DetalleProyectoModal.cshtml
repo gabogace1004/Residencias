@@ -1,0 +1,19 @@
+﻿@model UserRoles.Models.Proyecto
+
+<div>
+    <h5>@Model.Nombre</h5>
+    <p><strong>Descripción:</strong> @Model.Descripcion</p>
+    <p><strong>Razón Social:</strong> @Model.RazonSocial</p>
+    <p><strong>Estado:</strong> @Model.Estado</p>
+    <p><strong>Fecha Inicio:</strong> @Model.FechaInicio?.ToShortDateString()</p>
+    <p><strong>Fecha Fin:</strong> @Model.FechaFin?.ToShortDateString()</p>
+    <p><strong>Asesor:</strong> @Model.Asesor?.Nombre @Model.Asesor?.ApellidoPaterno</p>
+
+    <h6>Alumnos:</h6>
+    <ul>
+        @foreach (var a in Model.AlumnosProyectos.Select(ap => ap.Alumno))
+        {
+            <li>@a.Matricula - @a.Nombre @a.ApellidoPaterno</li>
+        }
+    </ul>
+</div>

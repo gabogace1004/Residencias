@@ -91,6 +91,14 @@
                                        asp-controller="Admin" asp-action="ProyectosDashboard">Dashboard</a>
                                 </li>
                             }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "Asesores" ? "active" : "")"
+                                       asp-controller="Admin" asp-action="Asesores">Asesores</a>
+                                </li>
+                         
+                            }
                         </ul>
 
                         <!-- Usuario / Logout derecha -->

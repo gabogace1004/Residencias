@@ -111,6 +111,24 @@
                     new bootstrap.Modal(document.getElementById("modalDetalleProyecto")).show();
                 });
         }
+            function mostrarModal(estado, fechaInicio, fechaFin) {
+            const url = `/Admin/GetProyectosPorEstado?estado=${estado}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+
+            // Abrir modal con HTML
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById("contenidoModal").innerHTML = html;
+
+                    // También actualizar botón de exportar
+                    const exportBtn = document.getElementById("btnExportarExcel");
+                    if (exportBtn) {
+                        exportBtn.href = `/Admin/ExportarProyectosPorEstadoExcel?estado=${estado}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+                    }
+
+                    new bootstrap.Modal(document.getElementById("modalProyectos")).show();
+                });
+        }
         // Cargar automáticamente
         window.onload = cargarGrafica;
 

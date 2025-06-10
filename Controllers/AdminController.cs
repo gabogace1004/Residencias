@@ -545,6 +545,41 @@ namespace Nodo.Controllers
 
             return PartialView("DetalleProyectoModal", proyecto);
         }
+        public IActionResult ExportarProyectosPorEstadoExcel(string estado, DateTime? fechaInicio, DateTime? fechaFin)
+        {
+            var proyectos = _context.Proyectos
+                .Include(p => p.Asesor)
+                .Include(p => p.AlumnosProyectos).ThenInclude(ap => ap.Alumno)
+                .Where(p => p.Estado == estado);
+
+            if (fechaInicio.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio >= fechaInicio.Value);
+
+            if (fechaFin.HasValue)
+                proyectos = proyectos.Where(p => p.FechaInicio <= fechaFin.Value);
+
+            var lista = proyectos.ToList();
+
+            var csv = new StringBuilder();
+            csv.AppendLine("Proyecto,Descripción,Razón Social,Asesor,Fecha Inicio,Fecha Fin,Alumnos");
+
+            foreach (var p in lista)
+            {
+                var asesor = p.Asesor != null ? $"{p.Asesor.Nombre} {p.Asesor.ApellidoPaterno}" : "";
+                var alumnos = p.AlumnosProyectos?
+                    .Select(ap => $"{ap.Alumno.Matricula} - {ap.Alumno.Nombre} {ap.Alumno.ApellidoPaterno}")
+                    .ToList();
+
+                var alumnosConcatenados = alumnos != null && alumnos.Any()
+                    ? string.Join(" | ", alumnos)
+                    : "Sin alumnos";
+
+                csv.AppendLine($"\"{p.Nombre}\",\"{p.Descripcion}\",\"{p.RazonSocial}\",\"{asesor}\",\"{p.FechaInicio?.ToShortDateString()}\",\"{p.FechaFin?.ToShortDateString()}\",\"{alumnosConcatenados}\"");
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(csv.ToString());
+            return File(bytes, "text/csv", $"Proyectos_{estado}_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
+        }
 
     }
 

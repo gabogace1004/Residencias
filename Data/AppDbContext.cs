@@ -9,12 +9,12 @@ namespace UserRoles.Data
     {
         public AppDbContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<Asesor> Asesores { get; set; } // ← ESTA LÍNEA AGREGA LA TABLA
-        public DbSet<Alumno> Alumnos { get; set; }// ← ESTA LÍNEA AGREGA LA TABLA
+        public DbSet<Asesor> Asesores { get; set; } 
+        public DbSet<Alumno> Alumnos { get; set; }
         public DbSet<Proyecto> Proyectos { get; set; }
         public DbSet<Archivo> Archivos { get; set; }
         public DbSet<AlumnoProyecto> AlumnosProyectos { get; set; }
-
+        public DbSet<Sugerencias> Sugerencias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -20,14 +20,13 @@ namespace Nodo.Controllers
             _context = context;
         }
 
-        // Vista principal del panel admin (cuando haces login como admin)
+     
         [HttpGet]
         public IActionResult Admin()
         {
-            return View(); // Asegúrate de tener Views/Admin/Admin.cshtml
+            return View();
         }
 
-        // Simulación de proyectos del Nodo
         [HttpGet]
         public IActionResult Prueba()
         {
@@ -70,7 +69,7 @@ namespace Nodo.Controllers
             return View(asesores);
         }
 
-        // Formulario para crear asesor
+        // Formulario  asesor
         [HttpGet]
         public IActionResult CreateAsesor()
         {
@@ -580,7 +579,74 @@ namespace Nodo.Controllers
             var bytes = Encoding.UTF8.GetBytes(csv.ToString());
             return File(bytes, "text/csv", $"Proyectos_{estado}_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
         }
+        public IActionResult ListaSugerencias()
+        {
+            var sugerencias = _context.Sugerencias
+                .OrderByDescending(s => s.FechaRegistro)
+                .ToList();
 
+            return View("ListaSugerencias", sugerencias);
+        }
+        public async Task<IActionResult> AprobarSugerencia(int id)
+        {
+            var s = _context.Sugerencias.FirstOrDefault(x => x.Id == id);
+            if (s == null) return NotFound();
+
+            // Registrar alumno si no existe
+            if (!_context.Alumnos.Any(a => a.Matricula == s.Matricula))
+            {
+                var alumno = new Alumno
+                {
+                    Matricula = s.Matricula,
+                    Nombre = s.Nombre,
+                    ApellidoPaterno = s.ApellidoPaterno,
+                    ApellidoMaterno = s.ApellidoMaterno,
+                    Departamento = s.Departamento,
+                    Correo = s.Correo,
+                    NumeroContacto = s.NumeroContacto
+                };
+                _context.Alumnos.Add(alumno);
+            }
+
+            // Crear proyecto
+            var proyecto = new Proyecto
+            {
+                Nombre = s.NombreProyecto,
+                Descripcion = s.Descripcion,
+                RazonSocial = s.RazonSocial,
+                Estado = "No iniciado",
+                FechaInicio = DateTime.Now
+            };
+            _context.Proyectos.Add(proyecto);
+            await _context.SaveChangesAsync(); // para tener el ID del proyecto
+
+            // Relación alumno-proyecto
+            _context.AlumnosProyectos.Add(new AlumnoProyecto
+            {
+                AlumnoMatricula = s.Matricula,
+                ProyectoId = proyecto.Id
+            });
+
+            // (opcional) eliminar sugerencia o marcar como "Procesada"
+            _context.Sugerencias.Remove(s);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ListaSugerencias");
+        }
+
+
+        public IActionResult DescartarSugerencia(int id)
+        {
+            var sugerencia = _context.Sugerencias.FirstOrDefault(s => s.Id == id);
+            if (sugerencia == null)
+                return NotFound();
+
+            _context.Sugerencias.Remove(sugerencia);
+            _context.SaveChanges();
+
+            return RedirectToAction("ListaSugerencias");
+        }
     }
 
 

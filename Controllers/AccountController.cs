@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserRoles.Models;
 using UserRoles.ViewModels;
+using System.Threading.Tasks;
 
 namespace UserRoles.Controllers
 {
@@ -45,7 +46,7 @@ namespace UserRoles.Controllers
                 }
                 else if (await userManager.IsInRoleAsync(user, "User"))
                 {
-                    return RedirectToAction("User", "Home"); // Redirige al User
+                    return RedirectToAction("User", "Usuario"); // ✅ Corrección aplicada aquí
                 }
                 else
                 {
@@ -96,7 +97,7 @@ namespace UserRoles.Controllers
                 await userManager.AddToRoleAsync(user, "User");
 
                 await signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Index", "Usuario"); // redirige al nuevo controlador
             }
 
             foreach (var error in result.Errors)

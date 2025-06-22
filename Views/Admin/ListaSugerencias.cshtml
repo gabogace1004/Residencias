@@ -1,0 +1,84 @@
+﻿@model List<UserRoles.Models.Sugerencias>
+
+@{
+    ViewData["Title"] = "Sugerencias Recibidas";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">📬 Sugerencias Enviadas por los Alumnos</h2>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre Completo</th>
+                <th>Matrícula</th>
+                <th>Departamento</th>
+                <th>Correo</th>
+                <th>Proyecto</th>
+                <th>Razón Social</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>@s.Nombre @s.ApellidoPaterno @s.ApellidoMaterno</td>
+                    <td>@s.Matricula</td>
+                    <td>@s.Departamento</td>
+                    <td>@s.Correo</td>
+                    <td>@s.NombreProyecto</td>
+                    <td>@s.RazonSocial</td>
+                    <td>@s.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-@s.Id">
+                            Ver / Aprobar
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-@s.Id" tabindex="-1" aria-labelledby="label-@s.Id" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title" id="label-@s.Id">Detalle de Sugerencia</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <h6 class="fw-bold">Datos del alumno</h6>
+                                        <ul>
+                                            <li><strong>Nombre:</strong> @s.Nombre @s.ApellidoPaterno @s.ApellidoMaterno</li>
+                                            <li><strong>Matrícula:</strong> @s.Matricula</li>
+                                            <li><strong>Departamento:</strong> @s.Departamento</li>
+                                            <li><strong>Correo:</strong> @s.Correo</li>
+                                            <li><strong>Contacto:</strong> @s.NumeroContacto</li>
+                                        </ul>
+
+                                        <h6 class="fw-bold">Proyecto propuesto</h6>
+                                        <ul>
+                                            <li><strong>Nombre:</strong> @s.NombreProyecto</li>
+                                            <li><strong>Descripción:</strong> @s.Descripcion</li>
+                                            <li><strong>Razón social:</strong> @s.RazonSocial</li>
+                                            <li><strong>Fecha sugerencia:</strong> @s.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</li>
+                                        </ul>
+
+                                        <hr />
+                                        <form asp-action="AprobarSugerencia" method="post">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-success w-100">✅ Registrar alumno y proyecto</button>
+                                        </form>
+                                        <form asp-action="DescartarSugerencia" method="post" onsubmit="return confirm('¿Estás seguro de que deseas descartar esta sugerencia?');">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-danger w-100">🗑️ Descartar sugerencia</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
